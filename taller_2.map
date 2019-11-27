@@ -1,0 +1,219 @@
+#Jhony Sánchez
+#######################################################
+
+MAP
+	NAME Taller_2
+		SIZE 800 600
+		STATUS ON
+		#EXTENT [xmin] [ymin] [xmax] [ymax]
+		EXTENT 1053855.50 860198.93 1068480.77 879011.06
+		
+		SHAPEPATH "geodata/"
+		FONTSET "lib/fonts/fonts.txt"
+		SYMBOLSET "lib/symbols/symbols.sym"
+		
+		IMAGECOLOR 255 255 255
+		UNITS METERS
+
+	WEB
+		IMAGEPATH "/var/www/html/sig3d/mapserver-sig3/tmp/"
+		IMAGEURL "tmp/"
+	END
+
+		#Leyenda embebida
+	LEGEND
+		STATUS EMBED
+		IMAGECOLOR 51 255 0
+		POSITION LL
+		KEYSIZE 20 12
+		KEYSPACING 5 5
+		LABEL
+			TYPE TRUETYPE
+			FONT "sans"
+			SIZE 9
+			COLOR 255 19 0
+		END
+		OUTLINECOLOR 255 19 0
+		#TRANSPARENT on
+	END
+
+	SCALEBAR
+		STYLE 0
+		STATUS EMBED
+		SIZE 250 4
+		COLOR 0 0 0
+		UNITS METERS
+		INTERVALS 5
+		TRANSPARENT off
+		POSITION LR
+		BACKGROUNDCOLOR 255 255 255
+		IMAGECOLOR 255 255 255
+		OUTLINECOLOR 211 211 211
+		LABEL
+			COLOR 0 0 0
+			SIZE TINY
+		END 
+	END
+
+	LAYER
+		NAME "Norte"
+		TYPE POINT
+		STATUS ON
+		TRANSFORM OFF
+		POSTLABELCACHE TRUE
+		FEATURE
+			POINTS 
+				775 35
+			END
+		END
+		CLASS
+			SYMBOL 'rosavientos'
+			COLOR 0 0 0
+			OUTLINECOLOR 0 0 0
+			STYLE 
+				POSITION UR
+			END
+		END
+	END
+
+
+	LAYER
+		CONNECTIONTYPE postgis
+		NAME "barrio"
+		CONNECTION "user=user password=user dbname=sig3_ruteo host=localhost port=5432"
+		DATA "the_geom FROM barrios_cali using unique gid using SRID=3115"
+		LABELITEM "barrio"
+		STATUS ON
+		TYPE POLYGON
+		CLASS
+			NAME "Barrios Cali"
+			STYLE
+				COLOR 204 200 199
+				OUTLINECOLOR 0 0 0
+			END
+			
+			LABEL
+				COLOR 0 0 0
+				FONT sans
+				TYPE TRUETYPE
+				POSITION CC
+				PARTIALS TRUE
+				SIZE 7
+				BUFFER 1
+				OUTLINECOLOR 255 255 255
+			END
+		END
+	END
+	
+	LAYER
+		CONNECTIONTYPE postgis
+		NAME "Lineas"
+		STATUS ON
+		CONNECTION "user=user password=user dbname=sig3_ruteo host=localhost port=5432"
+		DATA "the_geom FROM rutas_mio as lineas using unique gid using SRID=3115"
+		TYPE LINE
+		CLASS
+			NAME "Rutas MIO"
+			STYLE
+				COLOR 237 17 17
+				OUTLINECOLOR 237 17 17
+			END
+		END
+	END
+
+	LAYER
+		NAME "Rios"
+		STATUS ON
+		DATA "Rios.shp"
+		TYPE LINE
+		CLASS
+			NAME "Rios"
+			STYLE
+				COLOR 25 85 250
+				OUTLINECOLOR 25 85 250
+			END
+		END
+	END
+	
+	LAYER
+		CONNECTIONTYPE postgis
+		NAME "Puntos"
+		STATUS ON
+		CONNECTION "user=user password=user dbname=sig3_ruteo host=localhost port=5432"
+		DATA "the_geom FROM estaciones_mio as puntos using unique gid using SRID=3115"
+		TYPE POINT
+		CLASS
+			NAME "Estaciones MIO"
+			STYLE
+			    SYMBOL star
+				SIZE 15
+				COLOR 0 0 0
+				OUTLINECOLOR 60 254 20
+			END
+		END
+	END
+	
+		LAYER
+	  NAME "Áreas Protegidas"
+	  TYPE RASTER
+	  STATUS ON
+	  CONNECTION "http://ws-idesc.cali.gov.co:8081/geoserver/wms?"
+	  CONNECTIONTYPE WMS
+	  METADATA
+	    "wms_srs"             "EPSG:3115"
+	    "wms_name"            "pot_2014:amb_eep_areas_protegidas"
+	   "wms_server_version"  "1.1.0"
+	   "wms_format"          "image/png"
+	  END
+	END 
+	
+		LAYER
+	  NAME "Zona ambiental del Rio Cauca"
+	  TYPE RASTER
+	  STATUS ON
+	  CONNECTION "http://ws-idesc.cali.gov.co:8081/geoserver/wms?"
+	  CONNECTIONTYPE WMS
+	  METADATA
+	    "wms_srs"             "EPSG:3115"
+	    "wms_name"            "pot_2014:amb_eep_aeie_proteccion_ambiental_rio_cauca"
+	   "wms_server_version"  "1.1.0"
+	   "wms_format"          "image/png"
+	  END
+	END 
+
+	LAYER
+		NAME "Grilla"
+		METADATA
+			"DESCRIPTION" "Grid"
+		END
+		TYPE LINE
+		STATUS ON
+		CLASS
+			NAME "Graticule"
+			COLOR 0 0 0
+			LABEL
+				COLOR 162 169 160
+				FONT sans
+				TYPE truetype
+				SIZE 8
+				POSITION AUTO
+				PARTIALS FALSE
+				BUFFER 5
+				OUTLINECOLOR 255 255 255
+			END
+		END
+		PROJECTION
+			"init=epsg:3115"
+		END
+		GRID
+			#LABELFORMAT DDMM
+			#MAXARCS 5
+			#MAXINTERVAL 5
+			#MAXSUBDIVIDE 2
+			
+			LABELFORMAT '%.0fm'
+			MININTERVAL 5000
+		END
+	END
+
+END
